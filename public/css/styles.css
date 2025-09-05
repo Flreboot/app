@@ -1,0 +1,76 @@
+:root{
+  --bg: #0b1b2b;        /* blu notte */
+  --card: #0f2436;
+  --text: #e5e7eb;
+  --muted:#9ca3af;
+  --primary:#ff7a00;    /* arancione Snai */
+  --accent:#2f74ff;     /* blu acceso */
+  --danger:#ef4444;
+  --radius: 18px;
+  --shadow: 0 12px 30px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Arial;
+  color:var(--text); background:
+    radial-gradient(800px 400px at 20% -10%, rgba(47,116,255,.25) 0%, rgba(47,116,255,0) 60%),
+    radial-gradient(800px 400px at 80% 110%, rgba(255,122,0,.25) 0%, rgba(255,122,0,0) 60%),
+    var(--bg);
+}
+
+.container{
+  min-height:100%;
+  display:grid;
+  place-items:center;
+  padding:28px;
+}
+
+.card{
+  width:100%;
+  max-width: 460px;
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.00)) , var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 30px;
+  border:1px solid rgba(47,116,255,.25);
+}
+
+h1{margin:0 0 8px 0; font-size: 1.8rem; letter-spacing:.5px}
+.subtitle{margin:0 0 20px 0; color:var(--muted)}
+
+.form{display:grid; gap:16px}
+label{display:grid; gap:6px; font-size:.95rem}
+input{
+  width:100%;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(47,116,255,.35);
+  outline:none;
+  background:#0e2031;
+  color:var(--text);
+  transition: box-shadow .15s ease, border-color .15s ease, transform .08s ease;
+}
+input::placeholder{color:#9ca3af}
+input:focus{
+  border-color:var(--primary);
+  box-shadow: 0 0 0 3px rgba(255,122,0,.2), 0 8px 18px rgba(0,0,0,.25) inset;
+}
+
+.btn{
+  margin-top:6px;
+  width:100%;
+  padding:12px 14px;
+  border:none;
+  border-radius:14px;
+  background: linear-gradient(180deg, #ffa24d, #ff7a00);
+  color:#0b0f19; font-weight:800; cursor:pointer;
+  text-transform: uppercase; letter-spacing:.6px;
+  transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
+  box-shadow: 0 6px 14px rgba(255,122,0,.25);
+}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(1px)}
+
+.error{min-height:20px; color:var(--danger); margin:10px 0 0}

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FFL Reboot — Login</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    .logo {
+      display: block;
+      max-width: 180px;
+      margin: 0 auto 14px auto;
+    }
+    .title {
+      text-align: center;
+      font-size: 2rem;
+      margin: 0 0 8px 0;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <!-- Logo sopra -->
+      <img src="/img/logo.png" alt="FFL Reboot Logo" class="logo" />
+
+      <!-- Titolo centrato -->
+      <h1 class="title">FFL Reboot</h1>
+      <p class="subtitle">Accedi con il tuo account</p>
+
+      <form id="loginForm" class="form">
+        <label>
+          <span>Username</span>
+          <input type="text" name="username" id="username" autocomplete="username" required />
+        </label>
+
+        <label>
+          <span>Password</span>
+          <input type="password" name="password" id="password" autocomplete="current-password" required />
+        </label>
+
+        <button type="submit" class="btn">Entra</button>
+        <p id="error" class="error" role="alert" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <script src="/js/login.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+node_modules/
+exports/*.xlsx
+data/formazioni/*.json
+data/config.json

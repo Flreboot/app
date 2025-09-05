@@ -1,0 +1,14 @@
+{
+  "watch": [
+    "src",
+    "public",
+    "rose.txt"
+  ],
+  "ext": "js html css txt",
+  "ignore": [
+    "node_modules"
+  ],
+  "execMap": {
+    "js": "node"
+  }
+}

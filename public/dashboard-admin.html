@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FFL Reboot — Dashboard</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    .card { max-width: 900px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .topbar-left { display:flex; align-items:center; gap:10px; }
+    .topbar-left .logo { height:44px; display:block; }
+    .username { font-weight:800; text-transform:uppercase; letter-spacing:.5px; font-size:1.4rem; }
+
+    .topbar-right{ display:flex; align-items:center; gap:8px; }
+
+    .logout-btn {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffa24d, #ff7a00);
+      color: #0b0f19;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
+      box-shadow: 0 2px 6px rgba(255,122,0,.25);
+    }
+    .logout-btn:hover { filter: brightness(1.05); }
+    .logout-btn:active { transform: translateY(1px); }
+
+    .form-row { display:flex; align-items:center; gap:12px; margin-top:16px; }
+    .form-row label { font-weight:700; font-size:1rem; width: 24px; text-align:right; }
+    .form-row select {
+      padding:8px 12px;
+      border-radius:10px;
+      border:1px solid rgba(47,116,255,.35);
+      background:#0e2031;
+      color:var(--text);
+      font-size:0.95rem;
+      min-width: 300px;
+    }
+
+    #slots {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 24px;
+      align-items: start;
+      margin-top: 8px;
+    }
+    @media (max-width: 820px) {
+      #slots { grid-template-columns: 1fr; }
+    }
+
+    .textlabel label { width: auto; min-width: 90px; text-align: left; }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .reset-btn {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffa24d, #ff7a00);
+      color: #0b0f19;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
+      box-shadow: 0 2px 6px rgba(255,122,0,.25);
+    }
+    .reset-btn:hover { filter: brightness(1.05); }
+    .reset-btn:active { transform: translateY(1px); }
+
+    .send-btn {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #c1121f, #a00);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      box-shadow: 0 2px 6px rgba(193,18,31,.35);
+      transition: transform .08s ease, filter .15s ease;
+    }
+    .send-btn:hover { filter: brightness(1.1); }
+    .send-btn:active { transform: translateY(1px); }
+
+    #snackbar {
+      visibility: hidden;
+      min-width: 260px;
+      background: #0bb26b;
+      color: #fff;
+      text-align: center;
+      border-radius: 8px;
+      padding: 12px;
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      box-shadow: 0 4px 16px rgba(0,0,0,.35);
+      z-index: 9999;
+    }
+    #snackbar.show { visibility: visible; animation: fadein 0.25s, fadeout 0.25s 2.5s; }
+    @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 24px; opacity: 1;} }
+    @keyframes fadeout { from {bottom: 24px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+  
+    .admin-badge {
+      background:#c1121f; color:#fff; font-size:0.75rem; font-weight:700;
+      padding:2px 6px; border-radius:6px; margin-left:8px;
+    }
+    .deadline-row {
+      display:flex; align-items:center; gap:12px; margin-top:12px;
+    }
+    .deadline-row input[type="datetime-local"] {
+      padding:6px 8px;
+      border-radius:8px;
+      border:1px solid rgba(47,116,255,.35);
+      background:#0e2031;
+      color:var(--text);
+      font-size:0.95rem;
+    }
+</style>
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <header class="topbar">
+        <div class="topbar-left">
+          <img src="/img/logo.png" alt="FFL Reboot Logo" class="logo" />
+          <span class="username" id="username">USER</span>
+          <span class="admin-badge">ADMIN</span>
+        </div>
+        <div class="topbar-right">
+          <a href="/api/admin/export-formazioni.xlsx" class="send-btn" id="exportBtn" role="button">Esporta formazioni</a>
+          <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+      </header>
+
+      <div class="deadline-row">
+        <label for="deadline"><strong>Scadenza invio</strong>:</label>
+        <input type="datetime-local" id="deadline" />
+        <button class="reset-btn" id="saveDeadlineBtn" type="button">Salva</button>
+      </div>
+
+
+      <div id="content">
+        <p class="subtitle">Benvenuto nella tua Dashboard.</p>
+
+        <div class="form-row">
+          <label for="modulo" style="width:auto; text-align:left;">Modulo</label>
+          <select id="modulo">
+            <option value="">scegli</option>
+            <option>3-4-2-1</option>
+            <option>3-4-1-2</option>
+            <option>3-4-3</option>
+            <option>3-5-1-1</option>
+            <option>3-5-2</option>
+            <option>4-2-4</option>
+            <option>4-2-3-1</option>
+            <option>4-3-2-1</option>
+            <option>4-3-1-2</option>
+            <option>4-3-3</option>
+            <option>4-4-2</option>
+            <option>4-4-1-1</option>
+            <option>4-5-1</option>
+            <option>5-3-2</option>
+            <option>5-3-1-1</option>
+            <option>5-4-1</option>
+          </select>
+        </div>
+
+        <div id="slots"></div>
+        <div id="extras"></div>
+
+        <div class="actions">
+          <button class="reset-btn" id="resetBtn">Reset</button>
+          <button class="reset-btn" id="generalBtn" type="button" onclick="location.href='/formazioni-generali.html'">Formazioni Generali</button>
+          <button class="send-btn" id="sendBtn">Invia formazione</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="snackbar">Formazione inviata</div>
+
+  <script>
+    const SLOT_START_MAIN = 1;
+    const SLOT_END_MAIN = 11;
+    const SLOT_START_RES = 12;
+    const SLOT_END_RES = 23;
+    const SLOT_COUNT = SLOT_END_RES;
+    const EXTRA_IDS = ["captain", "vice"];
+
+    let players = [];
+
+    function createOption(value, text) {
+      const o = document.createElement("option");
+      o.value = value;
+      o.textContent = text;
+      return o;
+    }
+
+    function buildBaseSelect(idNum) {
+      const row = document.createElement("div");
+      row.className = "form-row";
+      const lab = document.createElement("label");
+      lab.setAttribute("for", "slot" + idNum);
+      lab.textContent = String(idNum);
+      row.appendChild(lab);
+      const sel = document.createElement("select");
+      sel.id = "slot" + idNum;
+      sel.appendChild(createOption("", "scegli"));
+      row.appendChild(sel);
+      return row;
+    }
+
+    function buildNamedSelect(id, labelText) {
+      const row = document.createElement("div");
+      row.className = "form-row textlabel";
+      const lab = document.createElement("label");
+      lab.setAttribute("for", id);
+      lab.textContent = labelText;
+      row.appendChild(lab);
+      const sel = document.createElement("select");
+      sel.id = id;
+      sel.appendChild(createOption("", "scegli"));
+      row.appendChild(sel);
+      return row;
+    }
+
+    function selectedValues(exceptId = null) {
+      const values = [];
+      for (let i = 1; i <= SLOT_COUNT; i++) {
+        const id = "slot" + i;
+        if (exceptId && id === exceptId) continue;
+        const v = (document.getElementById(id)?.value || "").trim();
+        if (v) values.push(v);
+      }
+      for (const extra of EXTRA_IDS) {
+        const id = extra;
+        if (exceptId && id === exceptId) continue;
+        const v = (document.getElementById(id)?.value || "").trim();
+        if (v) values.push(v);
+      }
+      return new Set(values);
+    }
+
+    function refreshOptions() {
+      const rebuildFor = [];
+      for (let i = 1; i <= SLOT_COUNT; i++) rebuildFor.push("slot" + i);
+      for (const extra of EXTRA_IDS) rebuildFor.push(extra);
+      for (const id of rebuildFor) {
+        const sel = document.getElementById(id);
+        if (!sel) continue;
+        const current = sel.value;
+        const taken = selectedValues(id);
+        sel.innerHTML = "";
+        sel.appendChild(createOption("", "scegli"));
+        for (const p of players) {
+          if (taken.has(p.name) && p.name !== current) continue;
+          sel.appendChild(createOption(p.name, `${p.name} — ${p.role}`));
+        }
+        if (current && Array.from(sel.options).some(opt => opt.value === current)) {
+          sel.value = current;
+        }
+      }
+    }
+
+    async function boot() {
+      const me = await fetch("/api/me").then(r => r.json()).catch(()=>({ok:false}));
+      if (!me.ok) { location.href = "/login.html"; return; }
+      document.getElementById("username").textContent = (me.user.username || "").toUpperCase();
+      const resp = await fetch("/api/players").then(r=>r.json()).catch(()=>({ok:false}));
+      if (!resp.ok) return;
+      players = resp.players || [];
+      const slotsWrap = document.getElementById("slots");
+      const colLeft = document.createElement("div");
+      const colRight = document.createElement("div");
+      for (let i = SLOT_START_MAIN; i <= SLOT_END_MAIN; i++) colLeft.appendChild(buildBaseSelect(i));
+      for (let i = SLOT_START_RES; i <= SLOT_END_RES; i++) colRight.appendChild(buildBaseSelect(i));
+      slotsWrap.appendChild(colLeft);
+      slotsWrap.appendChild(colRight);
+      const extrasWrap = document.getElementById("extras");
+      extrasWrap.appendChild(buildNamedSelect("captain", "Capitano"));
+      extrasWrap.appendChild(buildNamedSelect("vice", "Vice Capitano"));
+      refreshOptions();
+      for (let i = 1; i <= SLOT_COUNT; i++) document.getElementById("slot" + i).addEventListener("change", refreshOptions);
+      for (const extra of EXTRA_IDS) document.getElementById(extra).addEventListener("change", refreshOptions);
+    }
+
+    boot();
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await fetch("/api/logout", { method: "POST" });
+      window.location.href = "/login.html";
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      for (let i = 1; i <= SLOT_COUNT; i++) {
+        const sel = document.getElementById("slot" + i);
+        if (sel) sel.value = "";
+      }
+      for (const extra of EXTRA_IDS) {
+        const sel = document.getElementById(extra);
+        if (sel) sel.value = "";
+      }
+      refreshOptions();
+    });
+
+    function gatherFormazione() {
+      const slots = {};
+      for (let i = 1; i <= SLOT_COUNT; i++) {
+        slots[i] = document.getElementById("slot"+i).value || "";
+      }
+      return {
+        modulo: document.getElementById("modulo").value || "",
+        capitano: document.getElementById("captain").value || "",
+        vicecapitano: document.getElementById("vice").value || "",
+        slots
+      };
+    }
+
+    function showSnackbar(msg) {
+      const sb = document.getElementById("snackbar");
+      sb.textContent = msg;
+      sb.className = "show";
+      setTimeout(()=> { sb.className = sb.className.replace("show",""); }, 2500);
+    }
+
+    document.getElementById("sendBtn").addEventListener("click", async ()=>{
+      const data = gatherFormazione();
+      const res = await fetch("/api/submit-formation", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(data)
+      });
+      const js = await res.json();
+      if(js.ok){
+        showSnackbar("Formazione inviata");
+      } else {
+        alert(js.error||"Errore invio");
+      }
+    });
+  
+// --- DEADLINE ---
+const deadlineInput = document.getElementById("deadline");
+const saveDeadlineBtn = document.getElementById("saveDeadlineBtn");
+if (saveDeadlineBtn) {
+  saveDeadlineBtn.addEventListener("click", saveDeadline);
+}
+
+async function loadDeadline(){
+  try {
+    const res = await fetch("/api/deadline");
+    const js = await res.json();
+    if (js.ok && js.deadline) {
+      deadlineInput.value = js.deadline.slice(0,16);
+      checkDeadline(js.deadline);
+    } else {
+      checkDeadline(null);
+    }
+  } catch(e) {
+    // se l'endpoint non esiste ancora, non blocchiamo nulla
+    checkDeadline(null);
+  }
+}
+
+async function saveDeadline(){
+  const val = deadlineInput.value;
+  try {
+    await fetch("/api/admin/deadline", {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ deadline: val || null })
+    });
+    alert("Scadenza aggiornata");
+    checkDeadline(val || null);
+  } catch(e) {
+    alert("Errore nel salvataggio scadenza");
+  }
+}
+
+function checkDeadline(deadlineStr){
+  const btn = document.getElementById("sendBtn");
+  if (!btn) return;
+  if (!deadlineStr) { btn.disabled = false; return; }
+  const deadline = new Date(deadlineStr);
+  const now = new Date();
+  btn.disabled = now > deadline;
+}
+
+// aggiorna automaticamente ogni minuto
+setInterval(async () => {
+  try {
+    const res = await fetch("/api/deadline");
+    const js = await res.json();
+    if (js.ok) checkDeadline(js.deadline);
+  } catch(e) {}
+}, 60000);
+
+// carica subito
+loadDeadline();
+
+</script>
+</body>
+</html>
