@@ -169,7 +169,49 @@
   text-align:center;
   white-space:nowrap;
 }
-  </style>
+  
+/* ===== Mobile & small screens responsiveness ===== */
+@media (max-width: 920px) {
+  /* Stack the two columns and make everything fluid */
+  main.container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .card {
+    width: 100%;
+    max-width: 100%;
+  }
+  aside {
+    width: 100%;
+  }
+  .field-container {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 9/16;
+    background-size: cover; /* make sure the field image fills nicely on tall phones */
+    margin: 0 auto;
+  }
+
+  /* Inputs should not overflow on narrow screens */
+  .form-row select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* Slightly tighten spacing and typography */
+  .form-row { gap: 8px; }
+  .topbar-left .logo { height: 36px; }
+  .username { font-size: 1.1rem; }
+
+  /* Player badges a bit smaller to fit narrow width */
+  .player-box { font-size: 0.72rem; }
+
+  /* On mobile keep the natural left-to-right order so names don't look shuffled */
+  .line { flex-direction: row; }
+}
+
+</style>
 </head>
 <body>
   <main class="container" style="display:flex; gap:20px; align-items:flex-start;">
