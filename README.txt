@@ -16,3 +16,22 @@ FFL Reboot - Invio Formazione & Export
 4) Admin:
    - JSON aggregato: GET /api/admin/aggregate-formazioni
    - Export Excel:   GET /api/admin/export-formazioni.xlsx (download)
+
+
+Ecco i modi pratici per aggiornare la webapp su Render, passo-passo. Ti do 3 flussi (scegline uno e lo impostiamo):
+
+1) Semplice (Auto-deploy su ogni push)
+
+Modifica i file in locale (VS Code).
+
+Test locale (facoltativo): npm ci && npm start → apri http://localhost:3000.
+
+Commit & push:
+
+git add .
+git commit -m "fix: testo/feature"
+git push
+
+
+Render, con Auto Deploy ON, compila e pubblica in automatico.
+👉 Vedi lo stato in Render → Deploys → Logs.

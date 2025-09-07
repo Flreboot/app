@@ -97,10 +97,82 @@
     #snackbar.show { visibility: visible; animation: fadein 0.25s, fadeout 0.25s 2.5s; }
     @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 24px; opacity: 1;} }
     @keyframes fadeout { from {bottom: 24px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+  
+    /* ===== Colonna campo grafico ===== */
+    .field-container {
+      position: relative;
+      background: url("/img/campo.png") no-repeat center top;
+      background-size: contain;
+      width: 100%;
+      max-width: 400px;
+      aspect-ratio: 9/16;
+      margin: 0 auto;
+      color: #fff;
+    }
+    .line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: space-around;
+      gap: 10px;
+    }
+    .player-box {
+      background: #ffd700;
+      color: #000;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      text-align: center;
+      white-space: nowrap;
+    }
+    /* posizioni verticali solo sul campo verde (tarate sul tuo jpg) */
+    .line.gk  { bottom: 36%; }
+    .line.def { bottom: 47%; }
+    .line.mid { bottom: 58%; }
+    .line.treq{ bottom: 70%; }
+    .line.att { bottom: 80%; }
+    /* Testi nelle bande nere del jpg */
+    .team-name {
+      font-size:3.6rem;
+      color:#ffd700;
+      position:absolute;
+      top:3%;
+      left:50%;
+      transform:translateX(-50%);
+      font-size: 2.0rem;
+      font-weight:800;
+      color:#fff;
+      text-align:center;
+      pointer-events:none;
+    }
+    .captain-info {
+  position:absolute;
+  bottom: 17%;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+}
+
+  .captain-info span {
+  background:#ffd700;
+  color:#000;
+  font-weight:700;
+  padding:2px 6px;
+  border-radius:6px;
+  font-size:0.85rem;
+  text-align:center;
+  white-space:nowrap;
+}
   </style>
 </head>
 <body>
-  <main class="container">
+  <main class="container" style="display:flex; gap:20px; align-items:flex-start;">
     <section class="card">
       <header class="topbar">
         <div class="topbar-left">
@@ -146,7 +218,23 @@
         </div>
       </div>
     </section>
-  </main>
+  
+  <aside style="flex:1; color:white;">
+    <div class="field-container">
+      <div class="team-name" id="field-team-name"></div>
+      <div class="line gk" id="line-gk"></div>
+      <div class="line def" id="line-def"></div>
+      <div class="line mid" id="line-mid"></div>
+      <div class="line treq" id="line-treq"></div>
+      <div class="line att" id="line-att"></div>
+      <div class="captain-info">
+        Capitano: <span id="field-captain"></span><br>
+        Vice: <span id="field-vice"></span>
+      </div>
+    </div>
+  </aside>
+
+</main>
 
   <div id="snackbar">Formazione inviata</div>
 
@@ -268,16 +356,23 @@
       const colLeft = document.createElement("div");
       const colRight = document.createElement("div");
       for (let i = SLOT_START_MAIN; i <= SLOT_END_MAIN; i++) colLeft.appendChild(buildBaseSelect(i));
-      for (let i = SLOT_START_RES; i <= SLOT_END_RES; i++) colRight.appendChild(buildBaseSelect(i));
-      slotsWrap.appendChild(colLeft);
-      slotsWrap.appendChild(colRight);
-      const extrasWrap = document.getElementById("extras");
-      extrasWrap.appendChild(buildNamedSelect("captain", "Capitano"));
-      extrasWrap.appendChild(buildNamedSelect("vice", "Vice Capitano"));
-      refreshOptions();
-      for (let i = 1; i <= SLOT_COUNT; i++) document.getElementById("slot" + i).addEventListener("change", refreshOptions);
-      for (const extra of EXTRA_IDS) document.getElementById(extra).addEventListener("change", refreshOptions);
-    }
+for (let i = SLOT_START_RES; i <= SLOT_END_RES; i++) colRight.appendChild(buildBaseSelect(i));
+slotsWrap.appendChild(colLeft);
+slotsWrap.appendChild(colRight);
+const extrasWrap = document.getElementById("extras");
+extrasWrap.appendChild(buildNamedSelect("captain", "Capitano"));
+extrasWrap.appendChild(buildNamedSelect("vice", "Vice Capitano"));
+refreshOptions();
+for (let i = 1; i <= SLOT_COUNT; i++) {
+  const el = document.getElementById("slot" + i);
+  if (el) el.addEventListener("change", () => { refreshOptions(); renderField(); });
+}
+for (const extra of EXTRA_IDS) {
+  const el = document.getElementById(extra);
+  if (el) el.addEventListener("change", () => { refreshOptions(); renderField(); });
+}
+renderField();
+}
 
     boot();
 
@@ -295,10 +390,9 @@
         const sel = document.getElementById(extra);
         if (sel) sel.value = "";
       }
-      refreshOptions();
+      refreshOptions(); renderField();
     });
-
-    function gatherFormazione() {
+function gatherFormazione() {
       const slots = {};
       for (let i = 1; i <= SLOT_COUNT; i++) {
         slots[i] = document.getElementById("slot"+i).value || "";
@@ -333,6 +427,75 @@
       }
     });
   </script>
+<script>
+function renderField() {
+  const modulo = document.getElementById("modulo")?.value || "";
+  if (!modulo) return;
+
+  const parts = modulo.split("-").map(n => parseInt(n, 10));
+  if (parts.length < 3) return;
+
+  let def=0, mid=0, treq=0, att=0;
+  if(parts.length === 3){ [def, mid, att] = parts; }
+  if(parts.length === 4){ [def, mid, treq, att] = parts; }
+
+  const gk = [document.getElementById("slot1")?.value || ""];
+
+  const defenders = [];
+  for (let i = 2; i < 2+def; i++) defenders.push(document.getElementById("slot"+i)?.value || "");
+
+  const mids = [];
+  for (let i = 2+def; i < 2+def+mid; i++) mids.push(document.getElementById("slot"+i)?.value || "");
+
+  const trequartisti = [];
+  for (let i = 2+def+mid; i < 2+def+mid+treq; i++) trequartisti.push(document.getElementById("slot"+i)?.value || "");
+
+  const forwards = [];
+  for (let i = 2+def+mid+treq; i <= 11; i++) forwards.push(document.getElementById("slot"+i)?.value || "");
+
+  function fillLine(lineId, players) {
+    const line = document.getElementById(lineId);
+    if (!line) return;
+    line.innerHTML = "";
+    players.forEach(name => {
+      if (name) {
+        const div = document.createElement("div");
+        div.className = "player-box";
+        div.textContent = name;
+        line.appendChild(div);
+      }
+    });
+    line.style.justifyContent = players.length > 1 ? "space-around" : "center";
+  }
+
+  fillLine("line-gk", gk);
+  fillLine("line-def", defenders);
+  fillLine("line-mid", mids);
+  fillLine("line-treq", trequartisti);
+  fillLine("line-att", forwards);
+
+  const uname = document.getElementById("username")?.textContent || "";
+  document.getElementById("field-team-name").textContent = uname;
+  document.getElementById("field-captain").textContent = document.getElementById("captain")?.value || "";
+  document.getElementById("field-vice").textContent = document.getElementById("vice")?.value || "";
+}
+
+// Bind updates
+document.addEventListener("DOMContentLoaded", ()=>{
+  renderField();
+  const modSel = document.getElementById("modulo");
+  if (modSel) modSel.addEventListener("change", renderField);
+  for (let i = 1; i <= 11; i++) {
+    const sel = document.getElementById("slot"+i);
+    if (sel) sel.addEventListener("change", renderField);
+  }
+  const cap = document.getElementById("captain"); 
+  if (cap) cap.addEventListener("change", renderField);
+  const vice = document.getElementById("vice");
+  if (vice) vice.addEventListener("change", renderField);
+});
+</script>
+
 
 <script>
 /* Deadline enforcement - appended only, layout untouched */
