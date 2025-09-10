@@ -5,14 +5,15 @@ export function normalizeUsername(name = "") {
 
 // Elenco utenti consentiti (username "pulito" -> credenziali originali)
 const users = [
-  { username: "Xamatt",       password: "admin", isAdmin: true },
-  { username: "Atletico Var", password: "varrica"  },
-  { username: "Dreamteam",    password: "sasso"    },
-  { username: "Mi Max Turbo", password: "caccamo"  },
+  { username: "Xamatt",       password: "admin" },              // non è più admin
+  { username: "Atletico Var", password: "varrica" },
+  { username: "Dreamteam",    password: "sasso" },
+  { username: "Mi Max Turbo", password: "caccamo" },
   { username: "Il Signor G",  password: "scorsone" },
-  { username: "Scoglio FFC",  password: "piero"    },
-  { username: "Scaglione B",  password: "spektor"  },
-  { username: "FC Sofia",     password: "cordova"  }
+  { username: "Scoglio FFC",  password: "piero" },
+  { username: "Scaglione B",  password: "spektor" },
+  { username: "FC Sofia",     password: "cordova" },
+  { username: "admin",        password: "massimo", isAdmin: true }
 ];
 
 // Indice normalizzato -> record

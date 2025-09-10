@@ -79,6 +79,12 @@
     .send-btn:hover { filter: brightness(1.1); }
     .send-btn:active { transform: translateY(1px); }
 
+    .send-btn:disabled {
+      background: #888 !important;
+      cursor: not-allowed !important;
+      box-shadow: none !important;
+    }
+
     #snackbar {
       visibility: hidden;
       min-width: 260px;
