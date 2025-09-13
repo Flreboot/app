@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FFL Reboot — Registro</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    .card { max-width: 1200px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .topbar-left { display:flex; align-items:center; gap:10px; }
+    .topbar-left .logo { height:44px; display:block; }
+    .topbar-right{ display:flex; align-items:center; gap:8px; }
+    .title { font-weight:800; letter-spacing:.5px; }
+    .image-wrap { display:flex; justify-content:center; align-items:center; }
+    .image-wrap img {
+      max-width:100%;
+      height:auto;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .back-btn {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #c1121f, #a00);
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      box-shadow: 0 2px 6px rgba(193,18,31,.35);
+      transition: transform .08s ease, filter .15s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .back-btn:hover { filter: brightness(1.1); }
+    .back-btn:active { transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <header class="topbar">
+        <div class="topbar-left">
+          <img src="/img/logo.png" alt="FFL Reboot Logo" class="logo" />
+          <h1 class="title">Registro</h1>
+        </div>
+        <div class="topbar-right">
+          <a href="/dashboard" class="back-btn" id="backBtn" role="button">Indietro</a>
+        </div>
+      </header>
+
+      <div class="image-wrap">
+        <img src="/img/registro.jpeg" alt="Registro Fanta League" />
+      </div>
+    </section>
+  </main>
+</body>
+</html>
