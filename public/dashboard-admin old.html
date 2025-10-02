@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-
+<!doctype html>
 <html lang="it">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>FFL Reboot — Dashboard</title>
-<link href="/css/styles.css" rel="stylesheet"/>
-<style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FFL Reboot — Dashboard</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
     .card { max-width: 900px; }
     .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
     .topbar-left { display:flex; align-items:center; gap:10px; }
@@ -86,36 +85,41 @@
 </style>
 </head>
 <body>
-<main class="container">
-<section class="card">
-<header class="topbar">
-<div class="topbar-left">
-<img alt="FFL Reboot Logo" class="logo" src="/img/logo.png"/>
-<span class="username" id="username">USER</span>
-<span class="admin-badge">ADMIN</span>
-</div>
-<div class="topbar-right">
-<a class="reset-btn" href="/api/admin/export-formazioni.xlsx" id="exportBtn" role="button">Esporta formazioni</a>
-<button class="logout-btn" id="logoutBtn">Logout</button>
-</div>
-</header>
-<div class="deadline-row">
-<label for="deadline"><strong>Scadenza invio</strong>:</label>
-<input id="deadline" type="datetime-local"/>
-<button class="reset-btn" id="saveDeadlineBtn" type="button">Salva</button>
-</div><div class="deadline-row"><label for="gameWeekInput"><strong>Settimana di gioco</strong>:</label><input id="gameWeekInput" min="1" step="1" type="number"/><button class="reset-btn" id="saveGameWeekBtn" type="button">Conferma</button></div>
-<div id="content">
-<p class="subtitle">Benvenuto nella tua Dashboard.</p>
-<div class="actions">
-<button class="reset-btn" id="resetBtn">Reset</button>
-<button class="reset-btn" id="generalBtn" onclick="location.href='/formazioni-generali.html'" type="button">Formazioni Generali</button>
-<button class="reset-btn" id="competizioniBtn" onclick="location.href='/competizioni.html'" type="button">Competizioni</button>
-</div>
-</div>
-</section>
-</main>
-<div id="snackbar"></div>
-<script>
+  <main class="container">
+    <section class="card">
+      <header class="topbar">
+        <div class="topbar-left">
+          <img src="/img/logo.png" alt="FFL Reboot Logo" class="logo" />
+          <span class="username" id="username">USER</span>
+          <span class="admin-badge">ADMIN</span>
+        </div>
+        <div class="topbar-right">
+          <a href="/api/admin/export-formazioni.xlsx" class="reset-btn" id="exportBtn" role="button">Esporta formazioni</a>
+          <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+      </header>
+
+      <div class="deadline-row">
+        <label for="deadline"><strong>Scadenza invio</strong>:</label>
+        <input type="datetime-local" id="deadline" />
+        <button class="reset-btn" id="saveDeadlineBtn" type="button">Salva</button>
+      </div>
+
+      <div id="content">
+        <p class="subtitle">Benvenuto nella tua Dashboard.</p>
+
+        <div class="actions">
+          <button class="reset-btn" id="resetBtn">Reset</button>
+          <button class="reset-btn" id="generalBtn" type="button" onclick="location.href='/formazioni-generali.html'">Formazioni Generali</button>
+          <button class="reset-btn" id="competizioniBtn" type="button" onclick="location.href='/competizioni.html'">Competizioni</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="snackbar"></div>
+
+  <script>
     async function boot() {
       const me = await fetch("/api/me").then(r => r.json()).catch(()=>({ok:false}));
       if (!me.ok) { location.href = "/login.html"; return; }
@@ -166,48 +170,7 @@
       }
     }
 
-
-    // --- GAMEWEEK ---
-    const gameWeekInput = document.getElementById("gameWeekInput");
-    const saveGameWeekBtn = document.getElementById("saveGameWeekBtn");
-    if (saveGameWeekBtn) {
-      saveGameWeekBtn.addEventListener("click", saveGameWeek);
-    }
-
-    async function loadGameWeek(){
-      try {
-        const resp = await fetch("/api/gameweek");
-        if (resp.ok){
-          const data = await resp.json();
-          if (data && typeof data.gameWeek !== "undefined" && data.gameWeek !== null){
-            gameWeekInput.value = data.gameWeek;
-          }
-        }
-      } catch(e) {
-        console.error("Errore caricamento gameWeek", e);
-      }
-    }
-
-    async function saveGameWeek(){
-      try {
-        const val = gameWeekInput.value ? parseInt(gameWeekInput.value, 10) : null;
-        if (val !== null && Number.isNaN(val)) {
-          alert("Inserisci un numero valido per la settimana.");
-          return;
-        }
-        await fetch("/api/admin/gameweek", {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ gameWeek: val })
-        });
-        alert("Settimana di gioco aggiornata");
-      } catch(e) {
-        alert("Errore nel salvataggio della settimana di gioco");
-      }
-    }
-
     loadDeadline();
-    loadGameWeek();
   </script>
 </body>
 </html>

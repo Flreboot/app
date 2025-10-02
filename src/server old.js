@@ -202,73 +202,13 @@ app.get("/api/deadline", (req, res) => {
   res.json({ ok: true, deadline: cfg.deadline || null });
 });
 
-
 app.post("/api/admin/deadline", (req, res) => {
   if (!req.session.user || !req.session.user.isAdmin) {
     return res.status(403).json({ ok: false, error: "Non autorizzato" });
   }
-  try {
-    const { deadline } = req.body || {};
-    let cfg = {};
-    if (fs.existsSync(CONFIG_PATH)) {
-      try { cfg = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8")) || {}; } catch {}
-    }
-    cfg.deadline = deadline || null;
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2), "utf8");
-    return res.json({ ok: true, deadline: cfg.deadline });
-  } catch (e) {
-    return res.status(500).json({ ok: false, error: "Errore salvataggio configurazione" });
-  }
-});
-
-
-// --- Game Week (Settimana di gioco) ---
-app.get("/api/gameweek", (req, res) => {
-  try {
-    if (!fs.existsSync(CONFIG_PATH)) return res.json({ ok: true, gameWeek: null });
-    const cfg = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
-    return res.json({ ok: true, gameWeek: typeof cfg.gameWeek !== "undefined" ? cfg.gameWeek : null });
-  } catch (e) {
-    return res.status(500).json({ ok: false, error: "Errore lettura configurazione" });
-  }
-});
-
-app.post("/api/admin/gameweek", (req, res) => {
-  if (!req.session.user || !req.session.user.isAdmin) {
-    return res.status(403).json({ ok: false, error: "Non autorizzato" });
-  }
-  try {
-    const { gameWeek } = req.body || {};
-    const gw = (gameWeek === null || typeof gameWeek === "undefined") ? null : Number(gameWeek);
-    // Carica config esistente per non perdere altre chiavi (es. deadline)
-    let cfg = {};
-    if (fs.existsSync(CONFIG_PATH)) {
-      try { cfg = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8")) || {}; } catch {}
-    }
-    cfg.gameWeek = Number.isFinite(gw) ? gw : null;
-    fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2), "utf8");
-    return res.json({ ok: true, gameWeek: cfg.gameWeek });
-  } catch (e) {
-    return res.status(500).json({ ok: false, error: "Errore salvataggio configurazione" });
-  }
-});
-
-
-
-// --- Calendar (calendario.txt dal root) ---
-app.get("/api/calendar", (req, res) => {
-  try {
-    const calPath = path.join(__dirname, "..", "calendario.txt");
-    if (!fs.existsSync(calPath)) {
-      return res.status(404).json({ ok: false, error: "calendario.txt non trovato" });
-    }
-    const raw = fs.readFileSync(calPath, "utf8");
-    // Restituisco sia il testo che le righe
-    const lines = raw.split(/\r?\n/);
-    return res.json({ ok: true, lines, text: raw });
-  } catch (e) {
-    return res.status(500).json({ ok: false, error: "Errore lettura calendario" });
-  }
+  const { deadline } = req.body || {};
+  fs.writeFileSync(CONFIG_PATH, JSON.stringify({ deadline }, null, 2), "utf8");
+  res.json({ ok: true, deadline });
 });
 
 app.listen(PORT, () => {

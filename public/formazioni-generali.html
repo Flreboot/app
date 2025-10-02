@@ -1,32 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FFL Reboot — Formazioni Generali</title>
-  <link rel="stylesheet" href="/css/styles.css" />
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>FFL Reboot — Formazioni Generali</title>
+<link href="/css/styles.css" rel="stylesheet"/>
+<style>
     .card { max-width: 1200px; }
     .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
     .topbar-left { display:flex; align-items:center; gap:10px; }
     .topbar-left .logo { height:44px; display:block; }
     .topbar-right{ display:flex; align-items:center; gap:8px; }
     .title { font-weight:800; letter-spacing:.5px; }
-    .grid {
-      display:grid;
-      grid-template-columns: repeat(4, minmax(240px, 1fr));
+    .grid { display:grid; grid-template-columns: repeat(2, minmax(360px, 1fr));
       gap: 16px;
       margin-top: 8px;
     }
-    @media (max-width: 1100px) {
-      .grid { grid-template-columns: repeat(3, minmax(240px, 1fr)); }
-    }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
     @media (max-width: 840px) {
-      .grid { grid-template-columns: repeat(2, minmax(240px, 1fr)); }
+      .grid { display:grid; grid-template-columns: repeat(2, minmax(360px, 1fr)); }
     }
-    @media (max-width: 560px) {
-      .grid { grid-template-columns: 1fr; }
-    }
+    
     .team-card{
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0)), var(--card);
       border:1px solid rgba(47,116,255,.25);
@@ -85,27 +80,87 @@
     }
     .back-btn:hover { filter: brightness(1.1); }
     .back-btn:active { transform: translateY(1px); }
-  </style>
+  
+    .match { 
+      background: var(--card); 
+      border:1px solid rgba(47,116,255,.25); 
+      border-radius: var(--radius); 
+      box-shadow: var(--shadow); 
+      padding:14px; 
+      display:grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap:16px; 
+    }
+    .match-head{
+      grid-column: 1 / -1;
+      display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:6px;
+    }
+    .match-title{ font-weight:800; letter-spacing:.5px; text-transform:uppercase; }
+    .team-slot { display:flex; flex-direction:column; gap:10px; }
+    .muted { color: var(--muted); font-size: .9rem; }
+
+/* Stack matches vertically; also stack the two team blocks vertically to avoid overlap */
+.match { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 16px; 
+  padding: 14px; 
+  background: var(--card); 
+  border: 1px solid rgba(47,116,255,.25); 
+  border-radius: var(--radius); 
+  box-shadow: var(--shadow);
+}
+.match-head { 
+  display: flex; 
+  align-items: baseline; 
+  justify-content: space-between; 
+  gap: 8px; 
+  margin-bottom: 6px; 
+}
+.team-slot { 
+  display: block; 
+}
+.team-card { 
+  width: 100%; 
+}
+.team-card .list { 
+  display: block; 
+  overflow-wrap: anywhere; 
+  word-break: break-word; 
+}
+@media (max-width: 900px){
+  .match { padding: 12px; gap: 12px; }
+}
+
+.teams-vertical { display: flex; flex-direction: column; gap: 12px; }
+.team-separator { height: 1px; background: rgba(255,255,255,.12); margin: 4px 0; }
+
+.teams-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 700px){ .teams-row { grid-template-columns: 1fr; } }
+.team-separator { display: none; } /* non serve più nel layout affiancato */
+
+/* Force exactly 2 match cards per row on desktop */
+.grid { grid-template-columns: repeat(2, minmax(360px, 1fr)); }
+@media (max-width: 900px){ .grid { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
-  <main class="container">
-    <section class="card">
-      <header class="topbar">
-        <div class="topbar-left">
-          <img src="/img/logo.png" alt="FFL Reboot Logo" class="logo" />
-          <h1 class="title">Formazioni Generali</h1>
-        </div>
-        <div class="topbar-right">
-          <a href="/dashboard" class="back-btn" id="backBtn" role="button">Indietro</a>
-          <button class="refresh-btn" id="refreshBtn" type="button">Aggiorna</button>
-        </div>
-      </header>
-
-      <div id="grid" class="grid" aria-live="polite"></div>
-    </section>
-  </main>
-
-  <script>
+<main class="container">
+<section class="card">
+<header class="topbar">
+<div class="topbar-left">
+<img alt="FFL Reboot Logo" class="logo" src="/img/logo.png"/>
+<h1 class="title">Formazioni Generali</h1>
+</div>
+<div class="topbar-right">
+<a class="back-btn" href="/dashboard" id="backBtn" role="button">Indietro</a>
+<button class="refresh-btn" id="refreshBtn" type="button">Aggiorna</button>
+</div>
+</header>
+<div aria-live="polite" class="grid" id="grid"></div>
+</section>
+</main>
+<script>
     function pad(n){ return String(n).padStart(2,'0'); }
     function fmt(dtstr){
       if(!dtstr) return '—';
@@ -193,29 +248,277 @@
       return wrap;
     }
 
+    
+
+    (async function init(){
+      if(await ensureLogged()){
+        
+      }
+    })();
+  
+    function pad(n){ return String(n).padStart(2,'0'); }
+    function fmt(dtstr){
+      if(!dtstr) return '—';
+      const d = new Date(dtstr);
+      if(Number.isNaN(d.getTime())) return '—';
+      return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    async function ensureLogged(){
+      try {
+        const me = await fetch('/api/me', {cache:'no-store'}).then(r=>r.json());
+        if(!me.ok){ location.href = '/login.html'; return false; }
+        return true;
+      } catch(e){
+        location.href = '/login.html';
+        return false;
+      }
+    }
+
+    
+    async function fetchGameWeek(){
+      try{
+        const r = await fetch('/api/gameweek', {cache:'no-store'});
+        const j = await r.json();
+        if(j && j.ok !== false) return j.gameWeek ?? null;
+      }catch(e){}
+      return null;
+    }
+
+    async function fetchCalendarTxt(){
+      // 1) Try dedicated API if available
+      try{
+        const r = await fetch('/api/calendar', {cache:'no-store'});
+        if(r.ok){
+          const j = await r.json();
+          if(Array.isArray(j.lines)) return j.lines.join('\n');
+          if(typeof j.text === 'string') return j.text;
+        }
+      }catch(e){}
+      // 2) Fallback: try static file (if esposto)
+      try{
+        const r2 = await fetch('/calendario.txt', {cache:'no-store'});
+        if(r2.ok) return await r2.text();
+      }catch(e){}
+      return '';
+    }
+
+    function parseCalendarForWeek(text, weekNumber){
+      // Expected format: a line with the number, then 4 lines "TEAM A - TEAM B"
+      const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      const res = [];
+      for(let i=0;i<lines.length;i++){
+        const maybeNum = lines[i];
+        if(/^\d+$/.test(maybeNum)){
+          const num = parseInt(maybeNum,10);
+          if(num === Number(weekNumber)){
+            // Next up to 4 non-empty lines as matches
+            for(let k=1;k<=4 && (i+k)<lines.length;k++){
+              const L = lines[i+k];
+              if(/^\d+$/.test(L)) break; // next week reached early
+              // split on '-'
+              const parts = L.split(/\s-\s|\t-\t|-/).map(s=>s.trim()).filter(Boolean);
+              if(parts.length>=2){
+                res.push([parts[0], parts[1]]);
+              }
+            }
+            break;
+          }
+        }
+      }
+      return res;
+    }
+
+    function teamCardVertical(obj){
+      // Reuse existing visual grammar but stack vertically
+      const wrap = document.createElement('div');
+      wrap.className = 'team-card';
+
+      const head = document.createElement('div');
+      head.className = 'team-head';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'team-name';
+      nameEl.textContent = (obj?.username || '—').toUpperCase();
+      const modulo = document.createElement('div');
+      modulo.className = 'modulo';
+      modulo.textContent = obj?.modulo ? `Modulo: ${obj.modulo}` : 'Modulo: —';
+      head.appendChild(nameEl);
+      head.appendChild(modulo);
+
+      const titolari = [];
+      const riserve = [];
+      for(let i=1;i<=11;i++) titolari.push(obj?.slots?.[String(i)] || '');
+      for(let i=12;i<=23;i++) riserve.push(obj?.slots?.[String(i)] || '');
+
+      const listEl = document.createElement('div');
+      const labA = document.createElement('div'); labA.className = 'label'; labA.textContent = 'Titolari';
+      listEl.appendChild(labA);
+      listEl.appendChild(makeList(titolari, 1));
+
+      const capvice = document.createElement('div');
+      capvice.className = 'kv';
+      const cap = document.createElement('div'); cap.innerHTML = '<strong>Capitano:</strong> ' + (obj?.capitano || '—');
+      const vice = document.createElement('div'); vice.innerHTML = '<strong>Vice:</strong> ' + (obj?.vicecapitano || '—');
+      capvice.appendChild(cap); capvice.appendChild(vice);
+
+      const labB = document.createElement('div'); labB.className = 'label'; labB.textContent = 'Riserve';
+      const risEl = makeList(riserve, 12);
+
+      const saved = document.createElement('div');
+      saved.className = 'saved';
+      saved.textContent = 'Inserita il: ' + fmt(obj?.saved_at);
+
+      wrap.appendChild(head);
+      wrap.appendChild(listEl);
+      wrap.appendChild(capvice);
+      wrap.appendChild(labB);
+      wrap.appendChild(risEl);
+      wrap.appendChild(saved);
+      return wrap;
+    }
+
+    function normName(s=''){ return s.trim().replace(/\s+/g,' ').toUpperCase(); }
+
+
+    function makeList(items, startAt){
+      const ol = document.createElement('ol');
+      ol.className = 'list';
+      if(startAt) ol.start = startAt;
+      for(const it of items){
+        const li = document.createElement('li');
+        li.textContent = it || '';
+        ol.appendChild(li);
+      }
+      return ol;
+    }
+
+    function teamCard(obj){
+      const wrap = document.createElement('div');
+      wrap.className = 'team-card';
+
+      const head = document.createElement('div');
+      head.className = 'team-head';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'team-name';
+      nameEl.textContent = (obj.username || '').toUpperCase();
+      const modulo = document.createElement('div');
+      modulo.className = 'modulo';
+      modulo.textContent = obj.modulo ? `Modulo: ${obj.modulo}` : 'Modulo: —';
+      head.appendChild(nameEl);
+      head.appendChild(modulo);
+
+      const cols = document.createElement('div');
+      cols.className = 'cols';
+
+      const titolari = [];
+      const riserve = [];
+      for(let i=1;i<=11;i++) titolari.push(obj.slots?.[String(i)] || '');
+      for(let i=12;i<=23;i++) riserve.push(obj.slots?.[String(i)] || '');
+
+      const colA = document.createElement('div');
+      const labA = document.createElement('div'); labA.className = 'label'; labA.textContent = 'Titolari';
+      colA.appendChild(labA);
+      colA.appendChild(makeList(titolari, 1));
+
+      const colB = document.createElement('div');
+      const labB = document.createElement('div'); labB.className = 'label'; labB.textContent = 'Riserve';
+      colB.appendChild(labB);
+      colB.appendChild(makeList(riserve, 12));
+
+      cols.appendChild(colA);
+      cols.appendChild(colB);
+
+      const infos = document.createElement('div');
+      infos.className = 'kv';
+      const cap = document.createElement('div');
+      cap.innerHTML = '<strong>Capitano:</strong> ' + (obj.capitano || '—');
+      const vice = document.createElement('div');
+      vice.innerHTML = '<strong>Vice:</strong> ' + (obj.vicecapitano || '—');
+      infos.appendChild(cap);
+      infos.appendChild(vice);
+
+      const saved = document.createElement('div');
+      saved.className = 'saved';
+      saved.textContent = 'Inserita il: ' + fmt(obj.saved_at);
+
+      wrap.appendChild(head);
+      wrap.appendChild(cols);
+      wrap.appendChild(infos);
+      wrap.appendChild(saved);
+      return wrap;
+    }
+
     async function loadAll(){
       const grid = document.getElementById('grid');
       grid.innerHTML = '';
 
       try {
-        const resp = await fetch('/api/admin/aggregate-formazioni', {cache:'no-store'});
-        const js = await resp.json();
-        if(!js.ok){ grid.textContent = 'Nessuna formazione disponibile.'; return; }
-
-        const data = Array.isArray(js.data) ? js.data : [];
-        // Ordina alfabeticamente per username per coerenza
-        data.sort((a,b)=> (a.username||'').localeCompare(b.username||''));
-
-        if(data.length === 0){
-          grid.textContent = 'Nessuna formazione disponibile.';
+        // ensure gw
+        const gw = await fetchGameWeek();
+        if(gw === null || typeof gw === 'undefined'){
+          grid.textContent = 'Nessuna settimana di gioco selezionata dall\'admin.';
           return;
         }
 
+        // fetch calendar text
+        const calText = await fetchCalendarTxt();
+        const matches = parseCalendarForWeek(calText, gw);
+        if(matches.length === 0){
+          grid.textContent = 'Nessuna partita trovata per la settimana ' + gw + '.';
+          return;
+        }
+
+        // fetch all formations
+        const resp = await fetch('/api/admin/aggregate-formazioni', {cache:'no-store'});
+        const js = await resp.json();
+        const data = Array.isArray(js.data) ? js.data : [];
+
+        // index by normalized username
+        const map = new Map();
         for(const obj of data){
-          grid.appendChild(teamCard(obj));
+          map.set(normName(obj.username||''), obj);
+        }
+
+        // Render one "match" card per pairing
+        for(const [home, away] of matches){
+          const H = map.get(normName(home)) || null;
+          const A = map.get(normName(away)) || null;
+
+          const match = document.createElement('div');
+          match.className = 'match';
+
+          const head = document.createElement('div');
+          head.className = 'match-head';
+          const title = document.createElement('div');
+          title.className = 'match-title';
+          title.textContent = `${home} vs ${away}`;
+          const gwEl = document.createElement('div');
+          gwEl.className = 'muted';
+          gwEl.textContent = `Giornata ${gw}`;
+          head.appendChild(title); head.appendChild(gwEl);
+          match.appendChild(head);
+
+          
+          
+          const teamsWrap = document.createElement('div');
+          teamsWrap.className = 'teams-row';
+
+          const homeBlock = document.createElement('div');
+          homeBlock.className = 'team-slot';
+          homeBlock.appendChild(teamCardVertical(H || { username: home }));
+          teamsWrap.appendChild(homeBlock);
+
+          const awayBlock = document.createElement('div');
+          awayBlock.className = 'team-slot';
+          awayBlock.appendChild(teamCardVertical(A || { username: away }));
+          teamsWrap.appendChild(awayBlock);
+
+          match.appendChild(teamsWrap);
+
+grid.appendChild(match);
         }
       } catch(e){
-        grid.textContent = 'Errore nel recupero delle formazioni.';
+        grid.textContent = 'Errore nel recupero delle formazioni o del calendario.';
       }
     }
 
@@ -226,6 +529,7 @@
         loadAll();
       }
     })();
+  
   </script>
 </body>
 </html>
